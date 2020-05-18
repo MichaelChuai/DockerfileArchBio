@@ -1,0 +1,99 @@
+#! /usr/bin/env python3
+
+import argparse
+import subprocess
+import os
+
+
+def main():
+    prog = 'docker-run'
+    usage = 'docker-run [options] IMAGE [COMMAND] [ARG...]'
+
+    p = argparse.ArgumentParser(prog=prog, usage=usage, description='',
+                                formatter_class=argparse.RawDescriptionHelpFormatter)
+
+    current_directory = r'''`echo $(pwd)|sed 's/\///1;s/\//_/g'`'''
+
+    p.add_argument('--name', default=current_directory, metavar='string', help='Assign a name to the container')
+    p.add_argument('-p', metavar='string', help='Port', nargs='*')
+    p.add_argument('--volumes-from', metavar='string', help='Mount volumes from the specified container(s)', nargs='*')
+    p.add_argument('-w', '--workdir', default='/root/project', metavar='string',
+                   help='Working directory inside the container')
+    p.add_argument('-t', type=str, help='Container type, -1 for CPU, -2 for all gpus, 0 for gpu-0, 1 for gpu-1, etc.',
+                   required=True)
+    p.add_argument('-g', type=int, default=0, choices=(0, 1, 2),
+                   help='Using GUI or not, 2 for remote ssh, 1 for local Xserver, 0(default) not')
+    p.add_argument('-z', type=int, default=0, choices=(0, 1),
+                   help='Keep container or not, 1 for keeping, 0(default) not')
+    p.add_argument('-s', type=int, default=0, help='Adjusting shared memory, 0 for not applying')
+    p.add_argument('IMAGE', default='work:latest', nargs='?')
+    p.add_argument('COMMAND', default='bash', nargs='?')
+    p.add_argument('ARG', default='', nargs='?')
+
+    opts = p.parse_args()
+
+    port_mapping = opts.p
+    volumes_from = opts.volumes_from
+    workdir = opts.workdir
+    container_type = opts.t
+    gui = opts.g
+    keep_container = opts.z
+    shared_memory = opts.s
+    image = opts.IMAGE
+    command = opts.COMMAND
+    arg = opts.ARG
+    name = '{0}_{1}_{2}'.format(os.environ['USER'], ''.join(container_type.split(',')), opts.name)
+
+    if port_mapping is None:
+        port_mapping_desp = ''
+    elif len(port_mapping) == 1 and port_mapping[0] == 'P':
+        port_mapping_desp = '-P'
+    else:
+        port_mapping_desp = ' '.join(['-p {0}'.format(p) for p in port_mapping])
+
+    if volumes_from is None:
+        volumes_from_desp = ''
+    else:
+        volumes_from_desp = ' '.join(['--volumes-from {0}'.format(v) for v in volumes_from])
+
+    if container_type.strip() == '-1':
+        runtime_desp = ''
+    elif container_type.strip() == '-2':
+        runtime_desp = '--runtime nvidia'
+    else:
+        runtime_desp = '--runtime nvidia -e CUDA_VISIBLE_DEVICES={0}'.format(container_type)
+
+    if gui == 0:
+        gui_desp = ''
+    elif gui == 1:
+        gui_desp = '-v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=unix$DISPLAY'
+    elif gui == 2:
+        gui_desp = '--net=host -e DISPLAY=:10.0 -v $HOME/.Xauthority:/root/.Xauthority'
+
+    if shared_memory <= 0:
+        sm_desp = ''
+    else:
+        sm_desp = f'--shm-size {shared_memory}G'
+
+
+    if keep_container == 0:
+        keep_container_desp = '--rm'
+    else:
+        keep_container_desp = ''
+
+    cmd = 'docker run -it -v /etc/localtime:/etc/localtime:ro --log-opt max-size=10m --log-opt max-file=5 {1} {2} {4} {9} {10} -v $(pwd):{3} --name {0} {5} -w {3} {6} {7} {8}'.format(
+        name, port_mapping_desp,
+        volumes_from_desp,
+        workdir,
+        keep_container_desp,
+        runtime_desp, image,
+        command,
+        arg, gui_desp, sm_desp)
+
+    # print(cmd)
+    exit_code = subprocess.call(cmd, executable='/bin/bash', shell=True)
+    return exit_code
+
+
+if __name__ == '__main__':
+    main()
