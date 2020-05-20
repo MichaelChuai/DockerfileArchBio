@@ -1,4 +1,4 @@
-FROM gym:latest
+FROM conda:latest
 
 # Setup Bioconda channels
 RUN conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
@@ -19,10 +19,10 @@ RUN conda install -y sra-tools
 RUN conda install -y bowtie2 bwa
 
 ## File Tools
-RUN conda install -y samtools bedtools
+RUN conda install -y samtools bedtools gffread gffcompare
 
 ## RNA-Seq
 RUN conda install -y hisat2 star stringtie
 
-## GATK
+## IGV
 RUN conda install -y igvtools

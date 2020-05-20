@@ -2,12 +2,11 @@
 ### Anaconda3 == 2019.07
 ### Python == 3.7.3
 
-FROM nvidia/cuda:10.1-cudnn7-runtime
+FROM ubuntu:18.04
 
 
-ENV CUDA_ROOT /usr/local/cuda
-ENV LD_LIBRARY_PATH /usr/lib64:$CUDA_ROOT/lib64:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
-ENV PATH /usr/local/anaconda3/bin:$CUDA_ROOT/bin:$PATH
+ENV LD_LIBRARY_PATH /usr/lib64:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+ENV PATH /usr/local/anaconda3/bin:$PATH
 ENV LANG en_US.UTF-8
 ENV LC_ALL C
 
@@ -53,10 +52,10 @@ RUN mkdir -p -m 700 /root/.jupyter/ && \
 	echo "c.NotebookApp.open_browser = False" >> /root/.jupyter/jupyter_notebook_config.py
 
 # Add VS Code Server
-COPY vscode_server.tar.gz /root
+# COPY vscode_server.tar.gz /root
 
-RUN tar -zxv -f /root/vscode_server.tar.gz -C /root && \
-	rm -f /root/vscode_server.tar.gz
+# RUN tar -zxv -f /root/vscode_server.tar.gz -C /root && \
+# 	rm -f /root/vscode_server.tar.gz
 
 EXPOSE 8888
 
