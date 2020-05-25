@@ -44,6 +44,11 @@ RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.douban.c
 # Install simple bioinformatics packages
 RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.douban.com/simple pyfaidx pysam
 
+# Install PySpark
+RUN apt-get install -y openjdk-8-jdk
+
+RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.douban.com/simple pyspark
+
 # Add a notebook profile.
 RUN mkdir -p -m 700 /root/.jupyter/ && \
 	echo "c.NotebookApp.ip = '*'" >> /root/.jupyter/jupyter_notebook_config.py && \
@@ -51,11 +56,6 @@ RUN mkdir -p -m 700 /root/.jupyter/ && \
 	echo "c.NotebookApp.allow_root = True" >> /root/.jupyter/jupyter_notebook_config.py && \
 	echo "c.NotebookApp.open_browser = False" >> /root/.jupyter/jupyter_notebook_config.py
 
-# Add VS Code Server
-# COPY vscode_server.tar.gz /root
-
-# RUN tar -zxv -f /root/vscode_server.tar.gz -C /root && \
-# 	rm -f /root/vscode_server.tar.gz
 
 EXPOSE 8888
 
