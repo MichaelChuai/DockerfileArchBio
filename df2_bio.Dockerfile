@@ -26,3 +26,6 @@ RUN conda install -y hisat2 star stringtie
 
 ## IGV
 RUN conda install -y igvtools
+
+## GATK4
+RUN conda install -y gatk4
