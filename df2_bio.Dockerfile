@@ -29,3 +29,6 @@ RUN conda install -y igvtools
 
 ## GATK4
 RUN conda install -y gatk4
+
+## vcftools
+RUN conda install -y vcftools
