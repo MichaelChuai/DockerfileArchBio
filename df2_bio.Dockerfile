@@ -32,3 +32,6 @@ RUN conda install -y gatk4
 
 ## vcftools
 RUN conda install -y vcftools
+
+## Biopython
+RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.douban.com/simple biopython
