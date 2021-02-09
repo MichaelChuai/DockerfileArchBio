@@ -13,7 +13,7 @@ RUN conda config --set show_channel_urls yes
 
 # Install related softwares
 ## SRA Tools
-RUN conda install -y sra-tools
+RUN conda install -y sra-tools entrez-direct
 
 ## Genome Mapping
 RUN conda install -y bowtie2 bwa
