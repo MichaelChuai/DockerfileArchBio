@@ -13,25 +13,30 @@ RUN conda config --set show_channel_urls yes
 
 # Install related softwares
 ## SRA Tools
-RUN conda install -y sra-tools entrez-direct
+RUN conda install -c bioconda -y sra-tools entrez-direct
 
 ## Genome Mapping
-RUN conda install -y bowtie2 bwa
+RUN conda install -c bioconda -y bowtie2 bwa
 
 ## File Tools
-RUN conda install -y samtools bedtools gffread gffcompare
+RUN conda install -c bioconda -y samtools bedtools gffread gffcompare
 
 ## RNA-Seq
-RUN conda install -y hisat2 star stringtie
+RUN conda install -c bioconda -y hisat2 star stringtie
 
 ## IGV
-RUN conda install -y igvtools
+RUN conda install -c bioconda -y igvtools
 
 ## GATK4
-RUN conda install -y gatk4
+RUN conda install -c bioconda -y gatk4
 
 ## vcftools
-RUN conda install -y vcftools
+RUN conda install -c bioconda -y vcftools
+
+## bcftools
+
+RUN apt-get install -y libopenblas-base
+RUN conda install -c bioconda -y bcftools
 
 ## Biopython
 RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.douban.com/simple biopython
