@@ -35,3 +35,37 @@ RUN conda install -y vcftools
 
 ## Biopython
 RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.douban.com/simple biopython
+
+## circos
+
+RUN apt-get update && apt-get install -y libgd-dev cpanminus
+COPY circos-current.tgz /root
+ENV CIRCOS_HOME /usr/local/circos
+ENV PATH $CIRCOS_HOME/bin:$PATH
+
+RUN tar -zxv -f /root/circos-current.tgz -C /usr/local && \
+    chown -R root:root /usr/local/circos-0.69-9 && \
+    ln -s /usr/local/circos-0.69-9 $CIRCOS_HOME && \
+    rm -f /root/circos-current.tgz && \
+    rm -f /usr/local/anaconda3/bin/perl && \
+    ln -s /usr/bin/perl /usr/local/anaconda3/bin/perl && \
+    rm -f /usr/local/anaconda3/bin/cpanm && \
+    ln -s /usr/bin/cpanm /usr/local/anaconda3/bin/cpanm
+
+RUN cpanm --no-wget --notest GD
+
+RUN cpanm --no-wget --notest \
+    Text::Format \
+    Set::IntSpan \
+    Statistics::Basic \
+    SVG \
+    Params::Validate \
+    Regexp::Common \
+    Readonly \
+    Math::VecStat \
+    Math::Bezier \
+    Clone \
+    Config::General \
+    Font::TTF::Font \
+    Math::Round
+
