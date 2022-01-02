@@ -19,7 +19,7 @@ RUN conda install -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/biocond
 RUN conda install -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda/ -y bowtie2 bwa
 
 ## File Tools
-RUN conda install -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda/ -y samtools bedtools gffread gffcompare
+RUN conda install -c bioconda -y samtools bedtools gffread gffcompare
 
 ## RNA-Seq
 RUN conda install -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda/ -y hisat2 star stringtie
