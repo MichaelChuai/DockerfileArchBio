@@ -1,6 +1,6 @@
 ### Ubuntu == 18.04
-### Anaconda3 == 2019.07
-### Python == 3.7.3
+### Anaconda3 == 2021.11
+### Python == 3.9.7
 
 FROM ubuntu:18.04
 
@@ -33,10 +33,10 @@ RUN git config --global user.name "MichaelChuai" && \
     git config --global user.email alexanderm16@163.com
 
 # Install Anaconda
-COPY Anaconda3-2019.07-Linux-x86_64.sh /root
+COPY Anaconda3-2021.11-Linux-x86_64.sh /root
 
-RUN bash /root/Anaconda3-2019.07-Linux-x86_64.sh -b -p /usr/local/anaconda3 && \
-	rm -f /root/Anaconda3-2019.07-Linux-x86_64.sh
+RUN bash /root/Anaconda3-2021.11-Linux-x86_64.sh -b -p /usr/local/anaconda3 && \
+	rm -f /root/Anaconda3-2021.11-Linux-x86_64.sh
 
 # Install related packages
 RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.douban.com/simple tqdm pylint autopep8 twine orderedset
