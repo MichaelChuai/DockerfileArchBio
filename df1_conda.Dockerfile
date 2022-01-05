@@ -45,9 +45,12 @@ RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.douban.c
 RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.douban.com/simple pyfaidx pysam
 
 # Install PySpark
-#RUN apt-get install -y openjdk-8-jdk
+RUN apt-get update && apt-get install -y openjdk-8-jdk
 
-#RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.douban.com/simple pyspark
+RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.douban.com/simple pyspark==3.2.0
+
+COPY pyspark /usr/local/anaconda3/bin
+RUN chmod 755 /usr/local/anaconda3/bin/pyspark
 
 # Add a notebook profile.
 RUN mkdir -p -m 700 /root/.jupyter/ && \
