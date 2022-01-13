@@ -61,7 +61,7 @@ RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsi
 # Install pyspark
 RUN apt-get update && apt-get install -y openjdk-8-jdk
 
-RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.douban.com/simple pyspark==3.2.0
+RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple pyspark==3.2.0
 
 COPY pyspark /usr/local/anaconda3/bin
 RUN chmod 755 /usr/local/anaconda3/bin/pyspark
@@ -72,6 +72,42 @@ RUN mkdir -p -m 700 /root/.jupyter/ && \
 	echo "c.NotebookApp.token = ''" >> /root/.jupyter/jupyter_notebook_config.py && \
 	echo "c.NotebookApp.allow_root = True" >> /root/.jupyter/jupyter_notebook_config.py && \
 	echo "c.NotebookApp.open_browser = False" >> /root/.jupyter/jupyter_notebook_config.py
+
+## Visualization
+RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple upsetplot plotly dash
+
+### circos
+RUN apt-get update && apt-get install -y libgd-dev cpanminus
+COPY circos-current.tgz /root
+ENV CIRCOS_HOME /usr/local/circos
+ENV PATH $CIRCOS_HOME/bin:$PATH
+
+RUN tar -zxv -f /root/circos-current.tgz -C /usr/local && \
+    chown -R root:root /usr/local/circos-0.69-9 && \
+    ln -s /usr/local/circos-0.69-9 $CIRCOS_HOME && \
+    rm -f /root/circos-current.tgz && \
+    rm -f /usr/local/anaconda3/bin/perl && \
+    ln -s /usr/bin/perl /usr/local/anaconda3/bin/perl && \
+    rm -f /usr/local/anaconda3/bin/cpanm && \
+    ln -s /usr/bin/cpanm /usr/local/anaconda3/bin/cpanm
+
+RUN cpanm --no-wget --notest GD
+
+RUN cpanm --no-wget --notest \
+    Text::Format \
+    Set::IntSpan \
+    Statistics::Basic \
+    SVG \
+    Params::Validate \
+    Regexp::Common \
+    Readonly \
+    Math::VecStat \
+    Math::Bezier \
+    Clone \
+    Config::General \
+    Font::TTF::Font \
+    Math::Round
+
 
 
 EXPOSE 8888
