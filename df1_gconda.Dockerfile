@@ -53,7 +53,7 @@ RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsi
 COPY torch-1.10.1+cu113-cp39-cp39-linux_x86_64.whl /root
 COPY torchaudio-0.10.1+cu113-cp39-cp39-linux_x86_64.whl /root
 COPY torchvision-0.11.2+cu113-cp39-cp39-linux_x86_64.whl /root
-RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple /root/torch-1.10.1+cu113-cp39-cp39-linux_x86_64.whl /root/torchaudio-0.10.1+cu113-cp39-cp39-linux_x86_64.whl /root/torchvision-0.11.2+cu113-cp39-cp39-linux_x86_64.whl && \
+RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple /root/torch-1.10.1+cu113-cp39-cp39-linux_x86_64.whl /root/torchaudio-0.10.1+cu113-cp39-cp39-linux_x86_64.whl /root/torchvision-0.11.2+cu113-cp39-cp39-linux_x86_64.whl tensorboard && \
     rm -f /root/torch-1.10.1+cu113-cp39-cp39-linux_x86_64.whl /root/torchaudio-0.10.1+cu113-cp39-cp39-linux_x86_64.whl /root/torchvision-0.11.2+cu113-cp39-cp39-linux_x86_64.whl
 
 

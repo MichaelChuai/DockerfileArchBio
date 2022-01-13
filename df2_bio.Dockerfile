@@ -1,4 +1,4 @@
-FROM conda:latest
+FROM gconda:latest
 
 # Setup Bioconda channels
 RUN conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
