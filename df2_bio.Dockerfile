@@ -42,4 +42,7 @@ RUN conda install -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/biocond
 RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple biopython
 
 
+## scRNA && Spacial transcriptome
+RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple scanpy leidenalg spatialde 
 
+RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple scvi-tools
