@@ -10,5 +10,5 @@ RUN tar -zxv -f /root/spaceranger-1.3.1.tar.gz -C /usr/local && \
     ln -s /usr/local/spaceranger-1.3.1 $SPACERANGE_HOME && \
     rm -f /root/spaceranger-1.3.1.tar.gz
 
-RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.douban.com/simple scanpy leidenalg spatialde 
+RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple scanpy leidenalg spatialde 
 
