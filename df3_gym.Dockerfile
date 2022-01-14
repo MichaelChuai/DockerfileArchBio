@@ -18,3 +18,7 @@ RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsi
 RUN /usr/local/anaconda3/bin/python3 -c 'import mujoco_py; import os; mj_path = mujoco_py.utils.discover_mujoco(); xml_path = os.path.join(mj_path, "model", "humanoid.xml"); model = mujoco_py.load_model_from_path(xml_path); sim = mujoco_py.MjSim(model); print(sim.data.qpos); sim.step(); print(sim.data.qpos)'
 
 
+RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple gym
+
+RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple gym[atari] gym[accept-rom-license] gym[box2d] gym[classic_control] gym[toy_text] gym[other] 
+
