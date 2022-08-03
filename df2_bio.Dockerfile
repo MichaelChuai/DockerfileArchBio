@@ -1,48 +1,63 @@
-FROM gconda:latest
+FROM gbase:latest
 
 # Setup Bioconda channels
-RUN conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
 
-RUN conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main/
+RUN conda config --add channels http://mirrors.aliyun.com/anaconda/pkgs/main
 
-RUN conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda/
+RUN conda config --add channels http://mirrors.aliyun.com/anaconda/cloud/conda-forge/
 
-RUN conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/conda-forge/
+RUN conda config --add channels http://mirrors.aliyun.com/anaconda/cloud/bioconda/
 
 RUN conda config --set show_channel_urls yes
 
+RUN conda install mamba -n base -c http://mirrors.aliyun.com/anaconda/cloud/conda-forge/
+
+
 # Install related softwares
 ## SRA Tools
-RUN conda install -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda/ -y sra-tools entrez-direct
+RUN mamba install -c http://mirrors.aliyun.com/anaconda/cloud/bioconda/ -y sra-tools entrez-direct
 
 ## Genome Mapping
-RUN conda install -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda/ -y bowtie2 bwa
+RUN mamba install -c http://mirrors.aliyun.com/anaconda/cloud/bioconda/ -y bowtie2 bwa
 
 ## File Tools
-RUN conda install -c bioconda -y samtools bedtools gffread gffcompare
+RUN mamba install -c bioconda -y samtools bedtools gffread gffcompare
 
 ## RNA-Seq
-RUN conda install -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda/ -y hisat2 star stringtie
+RUN mamba install -c http://mirrors.aliyun.com/anaconda/cloud/bioconda/ -y star stringtie htseq
 
 ## IGV
-RUN conda install -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda/ -y igvtools
+RUN mamba install -c http://mirrors.aliyun.com/anaconda/cloud/bioconda/ -y igvtools
 
 ## GATK4
-RUN conda install -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda/ -y gatk4
+RUN mamba install -c http://mirrors.aliyun.com/anaconda/cloud/bioconda/ -y gatk4
 
 ## vcftools
-RUN conda install -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda/ -y vcftools
+RUN mamba install -c http://mirrors.aliyun.com/anaconda/cloud/bioconda/ -y vcftools
 
 ## bcftools
 
 RUN apt-get install -y libopenblas-base
-RUN conda install -c https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud/bioconda/ -y bcftools
+RUN mamba install -c http://mirrors.aliyun.com/anaconda/cloud/bioconda/ -y bcftools
 
 ## Biopython
-RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple biopython
+RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple biopython pyfaidx pysam
 
 
 ## scRNA && Spacial transcriptome
+
+COPY spaceranger-1.3.1.tar.gz /root
+ENV SPACERANGE_HOME /usr/local/spaceranger
+ENV PATH $SPACERANGE_HOME/bin:$PATH
+
+RUN tar -zxv -f /root/spaceranger-1.3.1.tar.gz -C /usr/local && \
+    chown -R root:root /usr/local/spaceranger-1.3.1 && \
+    ln -s /usr/local/spaceranger-1.3.1 $SPACERANGE_HOME && \
+    rm -f /root/spaceranger-1.3.1.tar.gz
+
 RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple scanpy leidenalg spatialde 
 
-RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple scvi-tools
+## R packages
+COPY bio_packages.R /root
+RUN /usr/bin/Rscript /root/bio_packages.R && \
+    rm -f /root/bio_packages.R
