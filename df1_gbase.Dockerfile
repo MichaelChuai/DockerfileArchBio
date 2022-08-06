@@ -64,6 +64,13 @@ RUN chmod 755 /usr/local/anaconda3/bin/pyspark
 ## Visualization
 RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple upsetplot plotly dash
 
+## Perl
+RUN apt-get update && apt-get install -y cpanminus
+
+RUN  rm -f /usr/local/anaconda3/bin/perl && \
+    ln -s /usr/bin/perl /usr/local/anaconda3/bin/perl && \
+    rm -f /usr/local/anaconda3/bin/cpanm && \
+    ln -s /usr/bin/cpanm /usr/local/anaconda3/bin/cpanm
 
 ## Install R
 RUN apt-get update -qq
@@ -78,7 +85,7 @@ RUN echo 'Asia/Shanghai' > /etc/timezone
 
 RUN DEBIAN_FRONTEND=noninteractive TZ=Asia/Shanghai apt-get install -y --no-install-recommends tzdata 
 
-RUN apt-get install -y --no-install-recommends r-base
+RUN apt-get install -y --no-install-recommends r-base liblzma-dev gfortran
 
 RUN sed -i 's/cloud.r-project.org/mirrors.sjtug.sjtu.edu.cn\/cran/g' /etc/R/Rprofile.site
 
@@ -86,9 +93,23 @@ RUN sed -i 's/make/make -j 12/g' /etc/R/Renviron
 
 RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple radian
 
-### Install Gviz and circlize
-COPY packages.R /root
-RUN /usr/bin/Rscript /root/packages.R && \
-    rm -f /root/packages.R
+### Install R packages
+
+RUN Rscript -e 'install.packages("languageserver"); install.packages("IRkernel"); IRkernel::installspec();'
+
+RUN Rscript -e 'install.packages("tidyverse"); install.packages("circlize");'
+
+RUN Rscript -e 'install.packages("BiocManager");'
+
+COPY FField_0.1.0.tar.gz /root
+RUN Rscript -e 'install.packages("/root/FField_0.1.0.tar.gz");' && \
+    rm -f /root/FField_0.1.0.tar.gz
+
+RUN apt-get install -y libjpeg-dev libblas-dev liblapack-dev
+
+RUN Rscript -e 'BiocManager::install("Gviz");'
+
+RUN Rscript -e 'BiocManager::install("GenVisR");'
+
 
 CMD ["/bin/bash"]
