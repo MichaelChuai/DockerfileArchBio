@@ -62,6 +62,7 @@ RUN tar -zxv -f /root/spaceranger-1.3.1.tar.gz -C /usr/local && \
 RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple scanpy leidenalg spatialde 
 
 ## R packages
-
+RUN Rscript -e 'BiocManager::install("Gviz");'
+RUN Rscript -e 'BiocManager::install("GenVisR");'
 RUN Rscript -e 'BiocManager::install("DESeq2");'
 RUN Rscript -e 'install.packages("Seurat");'
