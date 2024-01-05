@@ -43,13 +43,23 @@ RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsi
 
 ## scRNA && Spacial transcriptome
 
+COPY cellranger-7.2.0.tar /root
+ENV CELLRANGER_HOME /usr/local/cellranger
+ENV PATH $CELLRANGER_HOME/bin:$PATH
+
+RUN tar -xv -f /root/cellranger-7.2.0.tar -C /usr/local && \
+    chown -R root:root /usr/local/cellranger-7.2.0 && \
+    ln -s /usr/local/cellranger-7.2.0 $CELLRANGER_HOME && \
+    rm -f /root/cellranger-7.2.0.tar
+
+
 COPY spaceranger-2.1.1.tar.gz /root
-ENV SPACERANGE_HOME /usr/local/spaceranger
-ENV PATH $SPACERANGE_HOME/bin:$PATH
+ENV SPACERANGER_HOME /usr/local/spaceranger
+ENV PATH $SPACERANGER_HOME/bin:$PATH
 
 RUN tar -zxv -f /root/spaceranger-2.1.1.tar.gz -C /usr/local && \
     chown -R root:root /usr/local/spaceranger-2.1.1 && \
-    ln -s /usr/local/spaceranger-2.1.1 $SPACERANGE_HOME && \
+    ln -s /usr/local/spaceranger-2.1.1 $SPACERANGER_HOME && \
     rm -f /root/spaceranger-2.1.1.tar.gz
 
 RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple --ignore-installed scanpy leidenalg spatialde 

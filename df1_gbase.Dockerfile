@@ -1,9 +1,8 @@
 ### Ubuntu == 22.04
-### CUDA == 11.8
+### CUDA == 12.1
 ### CUDNN == 8
 ### Python == 3.11
 ### pytorch == 2.1
-### pyspark == 3.2.0
 ### R == 4.x
 
 FROM nvidia/cuda:12.1.1-devel-ubuntu22.04
