@@ -1,12 +1,14 @@
 ### Ubuntu == 22.04
 ### CUDA == 11.8
 ### CUDNN == 8
-### Python == 3.11
-### pytorch == 2.1
+### Anaconda3 == 2023.03
+### Python == 3.10
+### pytorch == 2.0.0
+### RAPIDS == 23.04
 ### pyspark == 3.2.0
-### R == 4.x
+### R == 4.2
 
-FROM nvidia/cuda:12.1.1-devel-ubuntu22.04
+FROM nvidia/cuda:11.8.0-cudnn8-devel-ubuntu22.04
 
 ENV CUDA_ROOT /usr/local/cuda
 ENV LD_LIBRARY_PATH /usr/lib64:$CUDA_ROOT/lib64:/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
@@ -28,9 +30,9 @@ RUN apt-get install -y net-tools iputils-ping iproute2 screen libarchive-dev
 RUN apt-get install -y git
 
 # Install Conda
-COPY Mambaforge-23.3.1-1-Linux-x86_64.sh /root
-RUN bash /root/Mambaforge-23.3.1-1-Linux-x86_64.sh -b -p /usr/local/anaconda3 && \
-	rm -f /root/Mambaforge-23.3.1-1-Linux-x86_64.sh
+COPY Mambaforge-Linux-x86_64.sh /root
+RUN bash /root/Mambaforge-Linux-x86_64.sh -b -p /usr/local/anaconda3 && \
+	rm -f /root/Mambaforge-Linux-x86_64.sh
 
 COPY condarc /root
 RUN mv /root/condarc /root/.condarc
@@ -65,21 +67,17 @@ RUN MAMBA_NO_LOW_SPEED_LIMIT=1 && mamba install -y --file /root/miniconda_extra1
 RUN MAMBA_NO_LOW_SPEED_LIMIT=1 && mamba install -y --file /root/miniconda_extra12.txt && rm -f /root/miniconda_extra12.txt
 
 # Install related packages
-COPY longintrepr.h /usr/local/anaconda3/include/python3.11
-
-
-RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple tqdm pylint autopep8 twine
+RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple tqdm pylint autopep8 twine orderedset
 
 # Install pytorch and related packages
-COPY torch-2.1.0-cp311-cp311-manylinux1_x86_64.whl /root
-RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple /root/torch-2.1.0-cp311-cp311-manylinux1_x86_64.whl  tensorboard && \
-    rm -f /root/torch-2.1.0-cp311-cp311-manylinux1_x86_64.whl && \
-    cp /usr/local/anaconda3/lib/python3.11/site-packages/nvidia/cudnn/lib/*.so.8 /usr/lib64
-
-RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple torchvision torchaudio dask
+COPY torch-2.0.0+cu118-cp310-cp310-linux_x86_64.whl /root
+COPY torchaudio-2.0.1+cu118-cp310-cp310-linux_x86_64.whl /root
+COPY torchvision-0.15.1+cu118-cp310-cp310-linux_x86_64.whl /root
+RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple /root/torch-2.0.0+cu118-cp310-cp310-linux_x86_64.whl /root/torchaudio-2.0.1+cu118-cp310-cp310-linux_x86_64.whl /root/torchvision-0.15.1+cu118-cp310-cp310-linux_x86_64.whl tensorboard && \
+    rm -f /root/torch-2.0.0+cu118-cp310-cp310-linux_x86_64.whl /root/torchaudio-2.0.1+cu118-cp310-cp310-linux_x86_64.whl /root/torchvision-0.15.1+cu118-cp310-cp310-linux_x86_64.whl
 
 # RAPIDS
-#RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple --extra-index-url=https://pypi.nvidia.com cudf-cu12 dask-cudf-cu12 cuml-cu12 cugraph-cu12 cuspatial-cu12 cuproj-cu12 cuxfilter-cu12 cucim 
+RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple cudf-cu11 dask-cudf-cu11 cuml-cu11 cugraph-cu11 cuspatial-cu11 cucim --extra-index-url=https://pypi.nvidia.com
 
 
 ## Visualization
@@ -115,18 +113,5 @@ COPY FField_0.1.0.tar.gz /root
 RUN Rscript -e 'install.packages("/root/FField_0.1.0.tar.gz");' && \
     rm -f /root/FField_0.1.0.tar.gz
 
-
-### Install go
-COPY go1.21.4.linux-amd64.tar.gz /root
-
-RUN tar -zxv -f /root/go1.21.4.linux-amd64.tar.gz -C /usr/local && \
-    chown -R root:root /usr/local/go && \
-    rm -f /root/go1.21.4.linux-amd64.tar.gz
-
-ENV PATH /usr/local/go/bin:$PATH
-ENV GOPATH /go
-ENV GOPROXY https://goproxy.cn,direct
-ENV PATH $GOPATH/bin:$PATH
-RUN mkdir -p "$GOPATH/src" "$GOPATH/bin" && chmod -R 1777 "$GOPATH"
 
 CMD ["/bin/bash"]
