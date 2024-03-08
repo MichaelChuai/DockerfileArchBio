@@ -14,7 +14,7 @@ ENV LANG en_US.UTF-8
 ENV LC_ALL C
 
 RUN rm -rf /etc/apt/sources.list.d/* && \
-	sed -i 's/deb-src/# dev-src/g; s/deb http:\/\/archive.ubuntu.com/deb http:\/\/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list
+	sed -i 's/deb-src/# dev-src/g; s/deb http:\/\/archive.ubuntu.com/deb http:\/\/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 RUN	apt-get update --fix-missing
 RUN	apt-get install -y netbase binutils xz-utils less patch
 RUN apt-get install -y libatomic1 perl manpages-dev liblsan0
@@ -70,15 +70,43 @@ COPY longintrepr.h /usr/local/anaconda3/include/python3.11
 RUN	/usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple tqdm pylint autopep8 twine
 
 # Install pytorch and related packages
-COPY torch-2.1.0-cp311-cp311-manylinux1_x86_64.whl /root
-RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple /root/torch-2.1.0-cp311-cp311-manylinux1_x86_64.whl  tensorboard && \
-    rm -f /root/torch-2.1.0-cp311-cp311-manylinux1_x86_64.whl && \
+COPY nvidia_cublas_cu12-12.1.3.1-py3-none-manylinux1_x86_64.whl /root
+RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple /root/nvidia_cublas_cu12-12.1.3.1-py3-none-manylinux1_x86_64.whl && \
+    rm -f /root/nvidia_cublas_cu12-12.1.3.1-py3-none-manylinux1_x86_64.whl
+
+COPY nvidia_cudnn_cu12-8.9.2.26-py3-none-manylinux1_x86_64.whl /root
+RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple /root/nvidia_cudnn_cu12-8.9.2.26-py3-none-manylinux1_x86_64.whl && \
+    rm -f /root/nvidia_cudnn_cu12-8.9.2.26-py3-none-manylinux1_x86_64.whl
+
+COPY nvidia_cufft_cu12-11.0.2.54-py3-none-manylinux1_x86_64.whl /root
+RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple /root/nvidia_cufft_cu12-11.0.2.54-py3-none-manylinux1_x86_64.whl && \
+    rm -f /root/nvidia_cufft_cu12-11.0.2.54-py3-none-manylinux1_x86_64.whl
+
+COPY nvidia_cusparse_cu12-12.1.0.106-py3-none-manylinux1_x86_64.whl /root
+RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple /root/nvidia_cusparse_cu12-12.1.0.106-py3-none-manylinux1_x86_64.whl && \
+    rm -f /root/nvidia_cusparse_cu12-12.1.0.106-py3-none-manylinux1_x86_64.whl
+
+COPY nvidia_cusolver_cu12-11.4.5.107-py3-none-manylinux1_x86_64.whl /root
+RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple /root/nvidia_cusolver_cu12-11.4.5.107-py3-none-manylinux1_x86_64.whl && \
+    rm -f /root/nvidia_cusolver_cu12-11.4.5.107-py3-none-manylinux1_x86_64.whl
+
+COPY nvidia_nccl_cu12-2.19.3-py3-none-manylinux1_x86_64.whl /root
+RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple /root/nvidia_nccl_cu12-2.19.3-py3-none-manylinux1_x86_64.whl && \
+    rm -f /root/nvidia_nccl_cu12-2.19.3-py3-none-manylinux1_x86_64.whl
+
+
+COPY triton-2.2.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl /root
+RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple /root/triton-2.2.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl && \
+    rm -f /root/triton-2.2.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
+
+COPY torch-2.2.1-cp311-cp311-manylinux1_x86_64.whl /root
+RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple /root/torch-2.2.1-cp311-cp311-manylinux1_x86_64.whl  tensorboard && \
+    rm -f /root/torch-2.2.1-cp311-cp311-manylinux1_x86_64.whl && \
     cp /usr/local/anaconda3/lib/python3.11/site-packages/nvidia/cudnn/lib/*.so.8 /usr/lib64
 
 RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple torchvision torchaudio dask
 
-# RAPIDS
-#RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple --extra-index-url=https://pypi.nvidia.com cudf-cu12 dask-cudf-cu12 cuml-cu12 cugraph-cu12 cuspatial-cu12 cuproj-cu12 cuxfilter-cu12 cucim 
+RUN /usr/local/anaconda3/bin/pip --no-cache-dir install -i https://pypi.tuna.tsinghua.edu.cn/simple  captum torchinfo wandb spacy gputil
 
 
 ## Visualization
